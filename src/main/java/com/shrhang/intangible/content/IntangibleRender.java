@@ -1,6 +1,7 @@
 package com.shrhang.intangible.content;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.shrhang.intangible.Config;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.LightTexture;
@@ -43,6 +44,7 @@ public class IntangibleRender {
         @Override
         public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, AbstractClientPlayer player,
                            float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
+            if (!Config.CLIENT.isIntangibleRender.get()) return;
             if (!player.hasEffect(INTANGIBLE)) return;
             if (player.isSpectator()) return;
 
@@ -55,7 +57,7 @@ public class IntangibleRender {
                     vertexConsumer,
                     LightTexture.FULL_BRIGHT,
                     0,
-                    0x409AE9B6
+                    Config.CLIENT.getIntangibleRenderColor()
             );
         }
     }

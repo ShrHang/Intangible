@@ -20,6 +20,8 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -49,19 +51,15 @@ public class Intangible {
     public static final Holder<Potion> LONG_INTANGIBLE_POTION =
             POTIONS.register("long_intangible", () -> new Potion("intangible", new MobEffectInstance(INTANGIBLE, 36000, 8)));
     public static final Holder<Potion> STRONG_INTANGIBLE_POTION =
-            POTIONS.register("strong_intangible", () -> new Potion("intangible", new MobEffectInstance(INTANGIBLE, 18000, 16)));
+            POTIONS.register("strong_intangible", () -> new Potion("intangible", new MobEffectInstance(INTANGIBLE, 9000, 16)));
 
     public Intangible(IEventBus modEventBus, ModContainer modContainer) {
+        Config.register(modContainer);
+        if (FMLEnvironment.dist.isClient()) modEventBus.addListener(IntangibleRender::registerLayers);
         modEventBus.addListener(this::commonSetup);
-
         ATTACHMENT_TYPES.register(modEventBus);
         MOB_EFFECTS.register(modEventBus);
         POTIONS.register(modEventBus);
-
-        if (FMLEnvironment.dist == Dist.CLIENT) {
-            modEventBus.addListener(IntangibleRender::registerLayers);
-        }
-        modContainer.registerConfig(ModConfig.Type.SERVER, Config.serverSpec);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {

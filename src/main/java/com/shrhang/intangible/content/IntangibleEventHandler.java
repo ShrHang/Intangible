@@ -4,6 +4,7 @@ import com.shrhang.intangible.Config;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
@@ -37,11 +38,33 @@ public class IntangibleEventHandler {
 
     private static void onPreDamage(final LivingDamageEvent.Pre event) {
         if (!Config.SERVER.isSlayTheSpire.get()) return;
-        if (!event.getEntity().hasEffect(INTANGIBLE)) return;
+
+        var entity = event.getEntity();
+        var effect = entity.getEffect(INTANGIBLE);
+        if (effect == null) return;
+
         var source = event.getSource();
         if (source.is(DamageTypeTags.BYPASSES_EFFECTS)) return;
         if (event.getNewDamage() <= 1.0f) return;
+
         event.setNewDamage(1.0F);
+
+        int duration = effect.getDuration();
+        int amplifier = effect.getAmplifier();
+
+        if (amplifier > 0) {
+            entity.removeEffectNoUpdate(INTANGIBLE);
+            entity.addEffect(new MobEffectInstance(
+                    INTANGIBLE,
+                    duration,
+                    amplifier - 1,
+                    effect.isAmbient(),
+                    effect.isVisible(),
+                    effect.showIcon()
+            ));
+        } else {
+            entity.removeEffect(INTANGIBLE);
+        }
     }
 
     /**
