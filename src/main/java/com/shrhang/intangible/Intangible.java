@@ -6,7 +6,11 @@ import com.shrhang.intangible.content.IntangibleRender;
 import com.shrhang.intangible.content.IntangibleEventHandler;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.Items;
@@ -47,11 +51,14 @@ public class Intangible {
     public static final DeferredRegister<Potion> POTIONS =
             DeferredRegister.create(BuiltInRegistries.POTION, Intangible.MODID);
     public static final Holder<Potion> INTANGIBLE_POTION =
-            POTIONS.register("intangible", () -> new Potion(new MobEffectInstance(INTANGIBLE, 18000, 8)));
+            POTIONS.register("intangible", () -> new Potion(new MobEffectInstance(INTANGIBLE, 12000, 8)));
     public static final Holder<Potion> LONG_INTANGIBLE_POTION =
-            POTIONS.register("long_intangible", () -> new Potion("intangible", new MobEffectInstance(INTANGIBLE, 36000, 8)));
+            POTIONS.register("long_intangible", () -> new Potion("intangible", new MobEffectInstance(INTANGIBLE, 24000, 6)));
     public static final Holder<Potion> STRONG_INTANGIBLE_POTION =
-            POTIONS.register("strong_intangible", () -> new Potion("intangible", new MobEffectInstance(INTANGIBLE, 9000, 16)));
+            POTIONS.register("strong_intangible", () -> new Potion("intangible", new MobEffectInstance(INTANGIBLE, 6000, 14)));
+
+    public static final TagKey<DamageType> BYPASSES_INTANGIBLE =
+            TagKey.create(Registries.DAMAGE_TYPE, rl("bypasses_intangible"));
 
     public Intangible(IEventBus modEventBus, ModContainer modContainer) {
         Config.register(modContainer);

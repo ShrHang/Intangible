@@ -1,6 +1,7 @@
 package com.shrhang.intangible.content;
 
 import com.shrhang.intangible.Config;
+import com.shrhang.intangible.Intangible;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -30,7 +31,7 @@ public class IntangibleEventHandler {
         if (!(event.getEntity() instanceof Player player)) return;
         if (!player.hasEffect(INTANGIBLE)) return;
         var source = event.getSource();
-        if (source.is(DamageTypeTags.BYPASSES_EFFECTS)) return;
+        if (source.is(Intangible.BYPASSES_INTANGIBLE)) return;
         if (source.is(DamageTypes.IN_WALL)) {
             event.setInvulnerable(true);
         }
