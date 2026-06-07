@@ -1,8 +1,27 @@
 {
   "values": [
-    "minecraft:cactus",
     "minecraft:in_wall",
     "#minecraft:is_drowning",
-    "#minecraft:is_fire"
+    "#minecraft:is_fire",
+    {
+      "id":"create:crush",
+      "required": false
+    },
+    {
+      "id":"create:mechanical_drill",
+      "required": false
+    },
+    {
+      "id":"create:mechanical_saw",
+      "required": false
+    },
+    {
+      "id":"immersiveengineering:sawblade",
+      "required": false
+    },
+    {
+      "id":"immersiveengineering:wire_shock",
+      "required": false
+    }
   ]
 }

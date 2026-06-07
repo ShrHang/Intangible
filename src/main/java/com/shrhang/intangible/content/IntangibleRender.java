@@ -35,7 +35,7 @@ public class IntangibleRender {
     }
 
     private static class IntangiblePlayerLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
-        private static final ResourceLocation WHITE_TEXTURE = rl("textures/entity/full_color.png");
+        private static final ResourceLocation WHITE_TEXTURE = rl("textures/entity/intangible_overlay.png");
 
         public IntangiblePlayerLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> renderer) {
             super(renderer);
