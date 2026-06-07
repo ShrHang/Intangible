@@ -5,6 +5,7 @@ import com.shrhang.intangible.Intangible;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
@@ -21,6 +22,7 @@ public class IntangibleEventHandler {
         NeoForge.EVENT_BUS.addListener(IntangibleEventHandler::onInvulnerabilityCheck);
         NeoForge.EVENT_BUS.addListener(IntangibleEventHandler::onPreDamage);
         NeoForge.EVENT_BUS.addListener(IntangibleEventHandler::onEffectAdded);
+        NeoForge.EVENT_BUS.addListener(IntangibleEventHandler::onPlayerTickPre);
         NeoForge.EVENT_BUS.addListener(IntangibleEventHandler::onPlayerTickPost);
         NeoForge.EVENT_BUS.addListener(IntangibleEventHandler::onPlayerLoggedIn);
         NeoForge.EVENT_BUS.addListener(IntangibleEventHandler::onPlayerLoggedOut);
@@ -33,6 +35,15 @@ public class IntangibleEventHandler {
         if (source.is(Intangible.BYPASSES_INTANGIBLE)) return;
         if (source.is(Intangible.INTANGIBLE_IMMUNE_TO)) {
             event.setInvulnerable(true);
+        }
+    }
+
+    private static void onPlayerTickPre(final PlayerTickEvent.Pre event) {
+        Player player = event.getEntity();
+        if (player.level().isClientSide() && player.hasEffect(INTANGIBLE)) {
+            IntangibleState.applyFlight(player);
+            keepIntangiblePoseState(player);
+            player.setOnGround(false);
         }
     }
 
@@ -82,7 +93,11 @@ public class IntangibleEventHandler {
     private static void onPlayerTickPost(final PlayerTickEvent.Post event) {
         Player player = event.getEntity();
         IntangibleState state = player.getExistingData(INTANGIBLE_STATE).orElse(null);
-        if (state != null && state.isActive() && !player.hasEffect(INTANGIBLE)) restore(player, state);
+        if (state != null && state.isActive() && !player.hasEffect(INTANGIBLE)) {
+            restore(player, state);
+        } else if (player.hasEffect(INTANGIBLE)) {
+            keepIntangiblePoseState(player);
+        }
     }
 
     /**
@@ -110,12 +125,20 @@ public class IntangibleEventHandler {
      * 用于复原玩家状态的辅助方法，并进行服务端数据同步。
      */
     private static void restore(Player player, IntangibleState state) {
+        player.setForcedPose(null);
         state.restoreBeforeEffect(player);
         if (player instanceof ServerPlayer) player.onUpdateAbilities();
     }
 
     public static void keepIntangibleCollisionState(Player player) {
         player.noPhysics = true;
+        keepIntangiblePoseState(player);
+        player.setOnGround(false);
         player.resetFallDistance();
+    }
+
+    private static void keepIntangiblePoseState(Player player) {
+        player.setForcedPose(Pose.STANDING);
+        player.setPose(Pose.STANDING);
     }
 }
