@@ -49,7 +49,7 @@ public class Config {
                     .define("isIntangibleRender", true);
             intangibleRenderColor = builder
                     .translation("config.intangible.render.intangiblerendercolor")
-                    .comment("ARGB color for the intangible player overlay. Use the 0xAARRGGBB format. Default is 0x409AE9B6L (a semi-transparent light green).")
+                    .comment("ARGB color for the intangible player overlay. Use the 0xAARRGGBB format. Default is 0x409AE9B6L.")
                     .defineInRange("intangibleRenderColor", 0x409AE9B6L, 0x00000000L, 0xFFFFFFFFL);
             builder.pop();
         }
@@ -71,7 +71,7 @@ public class Config {
                     .define("isSlayTheSpire", true);
             intangibleDurationCostOnDamage = builder
                     .translation("config.intangible.features.intangibledurationcostondamage")
-                    .comment("Duration cost in ticks when intangible reduces incoming damage. 20 ticks = 1 second. Default is 600 ticks, or 30 seconds.")
+                    .comment("Duration cost in ticks when intangible reduces incoming damage.")
                     .defineInRange("intangibleDurationCostOnDamage", 600, 1, Integer.MAX_VALUE);
             builder.pop();
         }
@@ -93,7 +93,7 @@ public class Config {
             builder.push("intangible");
             intangiblePotionDuration = builder
                     .translation("config.intangible.potions.intangible.duration")
-                    .comment("Duration of the normal intangible potion effect in ticks. 20 ticks = 1 second.")
+                    .comment("Duration of the normal intangible potion effect in ticks.")
                     .defineInRange("duration", 12000, 1, Integer.MAX_VALUE);
             isIntangiblePotionRecipeEnabled = builder
                     .translation("config.intangible.potions.intangible.recipeenabled")
@@ -112,7 +112,7 @@ public class Config {
             builder.push("long_intangible");
             longIntangiblePotionDuration = builder
                     .translation("config.intangible.potions.long_intangible.duration")
-                    .comment("Duration of the long intangible potion effect in ticks. 20 ticks = 1 second.")
+                    .comment("Duration of the long intangible potion effect in ticks.")
                     .defineInRange("duration", 24000, 1, Integer.MAX_VALUE);
             isLongIntangiblePotionRecipeEnabled = builder
                     .translation("config.intangible.potions.long_intangible.recipeenabled")
