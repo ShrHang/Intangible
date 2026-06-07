@@ -1,6 +1,6 @@
 # ChangeLog
 
-## 1.0.1 - 2024-06-06
+## 1.0.1 - 26-06-06
 - Fix:
   - Fixed intangible players switching to crawling pose when entering one-block-high passages.
 - Update:
