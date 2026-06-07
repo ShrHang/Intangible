@@ -20,6 +20,8 @@ public class IntangibleMobEffect extends MobEffect {
     public boolean applyEffectTick(LivingEntity entity, int amplifier) {
         if (entity instanceof Player player) {
             player.noPhysics = true;
+            player.setOnGround(false);
+            IntangibleEventHandler.keepIntangiblePoseState(player);
             player.resetFallDistance();
 
             if (IntangibleState.applyFlight(player) && player instanceof ServerPlayer serverPlayer) {

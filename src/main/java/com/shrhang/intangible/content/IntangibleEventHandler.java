@@ -5,6 +5,7 @@ import com.shrhang.intangible.Intangible;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
@@ -82,7 +83,11 @@ public class IntangibleEventHandler {
     private static void onPlayerTickPost(final PlayerTickEvent.Post event) {
         Player player = event.getEntity();
         IntangibleState state = player.getExistingDataOrNull(INTANGIBLE_STATE);
-        if (state != null && state.isActive() && !player.hasEffect(INTANGIBLE)) restore(player, state);
+        if (state != null && state.isActive() && !player.hasEffect(INTANGIBLE)) {
+            restore(player, state);
+        } else if (player.hasEffect(INTANGIBLE)) {
+            keepIntangiblePoseState(player);
+        }
     }
 
     /**
@@ -110,7 +115,13 @@ public class IntangibleEventHandler {
      * 用于复原玩家状态的辅助方法，并进行服务端数据同步。
      */
     private static void restore(Player player, IntangibleState state) {
+        player.setForcedPose(null);
         state.restoreBeforeEffect(player);
         if (player instanceof ServerPlayer) player.onUpdateAbilities();
+    }
+
+    public static void keepIntangiblePoseState(Player player) {
+        player.setForcedPose(Pose.STANDING);
+        player.setPose(Pose.STANDING);
     }
 }
