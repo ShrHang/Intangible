@@ -1,4 +1,5 @@
 ﻿# Intangible
+[![English](https://img.shields.io/badge/English-README--EN.md-blue)](README.md)
 
 当你终于搭好了一个巨大的工厂、一套复杂的管线系统，或者一台层层嵌套的多方块机器，却发现某个方块、管道或接口藏在结构最深处时，你真的想为了调整它而拆开整台机器吗？
 

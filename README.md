@@ -1,4 +1,5 @@
 ﻿# Intangible
+[![简体中文](https://img.shields.io/badge/如果你看不懂英文-请点击这里-red)](README_CN.md)
 
 When you have finally built a huge factory, a complex pipe network, or a deeply nested multiblock machine, only to find that one block, pipe, or interface is buried at the very center, do you really want to tear the whole machine apart just to adjust it?
 
