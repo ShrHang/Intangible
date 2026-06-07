@@ -1,5 +1,6 @@
 package com.shrhang.intangible.content;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -17,10 +18,9 @@ public class IntangibleMobEffect extends MobEffect {
     }
 
     @Override
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+    public boolean applyEffectTick(ServerLevel level, LivingEntity entity, int amplifier) {
         if (entity instanceof Player player) {
-            player.noPhysics = true;
-            player.resetFallDistance();
+            IntangibleEventHandler.keepIntangibleCollisionState(player);
 
             if (IntangibleState.applyFlight(player) && player instanceof ServerPlayer serverPlayer) {
                 serverPlayer.onUpdateAbilities();

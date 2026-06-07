@@ -48,7 +48,7 @@ public class Intangible {
     public static final DeferredRegister<Potion> POTIONS =
             DeferredRegister.create(BuiltInRegistries.POTION, Intangible.MODID);
     public static final Holder<Potion> INTANGIBLE_POTION =
-            POTIONS.register("intangible", () -> new Potion(intangiblePotionEffect(
+            POTIONS.register("intangible", () -> new Potion("intangible", intangiblePotionEffect(
                     Config.STARTUP.intangiblePotionDuration.get()
             )));
     public static final Holder<Potion> LONG_INTANGIBLE_POTION =
@@ -63,7 +63,11 @@ public class Intangible {
 
     public Intangible(IEventBus modEventBus, ModContainer modContainer) {
         Config.register(modContainer);
-        if (FMLEnvironment.dist.isClient()) modEventBus.addListener(IntangibleRender::registerLayers);
+        if (FMLEnvironment.dist.isClient()) {
+            modEventBus.addListener(IntangibleRender::registerLayers);
+            modEventBus.addListener(IntangibleRender::registerRenderStateModifiers);
+            NeoForge.EVENT_BUS.addListener(IntangibleRender::onMovementInputUpdate);
+        }
         modEventBus.addListener(this::commonSetup);
         ATTACHMENT_TYPES.register(modEventBus);
         MOB_EFFECTS.register(modEventBus);
@@ -105,7 +109,7 @@ public class Intangible {
             return;
         }
 
-        Holder<Potion> input = BuiltInRegistries.POTION.getHolder(inputPotionLocation).orElse(null);
+        Holder<Potion> input = BuiltInRegistries.POTION.get(inputPotionLocation).orElse(null);
         if (input == null) {
             LOGGER.warn("Skipping intangible potion recipe with unknown input potion '{}'", inputPotionId);
             return;

@@ -81,7 +81,7 @@ public class IntangibleEventHandler {
      */
     private static void onPlayerTickPost(final PlayerTickEvent.Post event) {
         Player player = event.getEntity();
-        IntangibleState state = player.getExistingDataOrNull(INTANGIBLE_STATE);
+        IntangibleState state = player.getExistingData(INTANGIBLE_STATE).orElse(null);
         if (state != null && state.isActive() && !player.hasEffect(INTANGIBLE)) restore(player, state);
     }
 
@@ -102,7 +102,7 @@ public class IntangibleEventHandler {
      */
     private static void onPlayerLoggedOut(final PlayerEvent.PlayerLoggedOutEvent event) {
         Player player = event.getEntity();
-        IntangibleState state = player.getExistingDataOrNull(INTANGIBLE_STATE);
+        IntangibleState state = player.getExistingData(INTANGIBLE_STATE).orElse(null);
         if (state != null && state.isActive()) restore(player, state);
     }
 
@@ -112,5 +112,10 @@ public class IntangibleEventHandler {
     private static void restore(Player player, IntangibleState state) {
         state.restoreBeforeEffect(player);
         if (player instanceof ServerPlayer) player.onUpdateAbilities();
+    }
+
+    public static void keepIntangibleCollisionState(Player player) {
+        player.noPhysics = true;
+        player.resetFallDistance();
     }
 }
