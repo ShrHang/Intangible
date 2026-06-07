@@ -61,32 +61,31 @@ public class Config {
 
     public static class Server {
         public final ModConfigSpec.BooleanValue isSlayTheSpire;
+        public final ModConfigSpec.IntValue intangibleDurationCostOnDamage;
+
         Server(ModConfigSpec.Builder builder) {
             builder.push("features");
             isSlayTheSpire = builder
                     .translation("config.intangible.features.isslaythespire")
-                    .comment("Whether intangible should work like Slay the Spire's Intangible: most incoming damage above 1 is reduced to 1 and consumes one amplifier level.")
+                    .comment("Whether intangible should work like Slay the Spire's Intangible: most incoming damage above 1 is reduced to 1 and consumes effect duration.")
                     .define("isSlayTheSpire", true);
+            intangibleDurationCostOnDamage = builder
+                    .translation("config.intangible.features.intangibledurationcostondamage")
+                    .comment("Duration cost in ticks when intangible reduces incoming damage. 20 ticks = 1 second. Default is 600 ticks, or 30 seconds.")
+                    .defineInRange("intangibleDurationCostOnDamage", 600, 1, Integer.MAX_VALUE);
             builder.pop();
         }
     }
 
     public static class Startup {
         public final ModConfigSpec.IntValue intangiblePotionDuration;
-        public final ModConfigSpec.IntValue intangiblePotionAmplifier;
         public final ModConfigSpec.IntValue longIntangiblePotionDuration;
-        public final ModConfigSpec.IntValue longIntangiblePotionAmplifier;
-        public final ModConfigSpec.IntValue strongIntangiblePotionDuration;
-        public final ModConfigSpec.IntValue strongIntangiblePotionAmplifier;
         public final ModConfigSpec.BooleanValue isIntangiblePotionRecipeEnabled;
         public final ModConfigSpec.ConfigValue<String> intangiblePotionRecipeInput;
         public final ModConfigSpec.ConfigValue<String> intangiblePotionRecipeIngredient;
         public final ModConfigSpec.BooleanValue isLongIntangiblePotionRecipeEnabled;
         public final ModConfigSpec.ConfigValue<String> longIntangiblePotionRecipeInput;
         public final ModConfigSpec.ConfigValue<String> longIntangiblePotionRecipeIngredient;
-        public final ModConfigSpec.BooleanValue isStrongIntangiblePotionRecipeEnabled;
-        public final ModConfigSpec.ConfigValue<String> strongIntangiblePotionRecipeInput;
-        public final ModConfigSpec.ConfigValue<String> strongIntangiblePotionRecipeIngredient;
 
         Startup(ModConfigSpec.Builder builder) {
             builder.push("potions");
@@ -96,10 +95,6 @@ public class Config {
                     .translation("config.intangible.potions.intangible.duration")
                     .comment("Duration of the normal intangible potion effect in ticks. 20 ticks = 1 second.")
                     .defineInRange("duration", 12000, 1, Integer.MAX_VALUE);
-            intangiblePotionAmplifier = builder
-                    .translation("config.intangible.potions.intangible.amplifier")
-                    .comment("Amplifier of the normal intangible potion effect. 0 means level I.")
-                    .defineInRange("amplifier", 8, 0, 255);
             isIntangiblePotionRecipeEnabled = builder
                     .translation("config.intangible.potions.intangible.recipeenabled")
                     .comment("Whether the normal intangible potion brewing recipe is enabled.")
@@ -119,10 +114,6 @@ public class Config {
                     .translation("config.intangible.potions.long_intangible.duration")
                     .comment("Duration of the long intangible potion effect in ticks. 20 ticks = 1 second.")
                     .defineInRange("duration", 24000, 1, Integer.MAX_VALUE);
-            longIntangiblePotionAmplifier = builder
-                    .translation("config.intangible.potions.long_intangible.amplifier")
-                    .comment("Amplifier of the long intangible potion effect. 0 means level I.")
-                    .defineInRange("amplifier", 6, 0, 255);
             isLongIntangiblePotionRecipeEnabled = builder
                     .translation("config.intangible.potions.long_intangible.recipeenabled")
                     .comment("Whether the long intangible potion brewing recipe is enabled.")
@@ -135,29 +126,6 @@ public class Config {
                     .translation("config.intangible.potions.long_intangible.recipeingredient")
                     .comment("Item id used as the ingredient for the long intangible potion brewing recipe.")
                     .define("recipeIngredient", "minecraft:redstone");
-            builder.pop();
-
-            builder.push("strong_intangible");
-            strongIntangiblePotionDuration = builder
-                    .translation("config.intangible.potions.strong_intangible.duration")
-                    .comment("Duration of the strong intangible potion effect in ticks. 20 ticks = 1 second.")
-                    .defineInRange("duration", 6000, 1, Integer.MAX_VALUE);
-            strongIntangiblePotionAmplifier = builder
-                    .translation("config.intangible.potions.strong_intangible.amplifier")
-                    .comment("Amplifier of the strong intangible potion effect. 0 means level I.")
-                    .defineInRange("amplifier", 14, 0, 255);
-            isStrongIntangiblePotionRecipeEnabled = builder
-                    .translation("config.intangible.potions.strong_intangible.recipeenabled")
-                    .comment("Whether the strong intangible potion brewing recipe is enabled.")
-                    .define("recipeEnabled", true);
-            strongIntangiblePotionRecipeInput = builder
-                    .translation("config.intangible.potions.strong_intangible.recipeinput")
-                    .comment("Potion id used as the input for the strong intangible potion brewing recipe.")
-                    .define("recipeInput", "intangible:intangible");
-            strongIntangiblePotionRecipeIngredient = builder
-                    .translation("config.intangible.potions.strong_intangible.recipeingredient")
-                    .comment("Item id used as the ingredient for the strong intangible potion brewing recipe.")
-                    .define("recipeIngredient", "minecraft:glowstone_dust");
             builder.pop();
 
             builder.pop();

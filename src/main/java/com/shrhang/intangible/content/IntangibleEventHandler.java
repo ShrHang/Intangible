@@ -49,15 +49,14 @@ public class IntangibleEventHandler {
 
         event.setNewDamage(1.0F);
 
-        int duration = effect.getDuration();
-        int amplifier = effect.getAmplifier();
+        int duration = effect.getDuration() - Config.SERVER.intangibleDurationCostOnDamage.get();
 
-        if (amplifier > 0) {
+        if (duration > 0) {
             entity.removeEffectNoUpdate(INTANGIBLE);
             entity.addEffect(new MobEffectInstance(
                     INTANGIBLE,
                     duration,
-                    amplifier - 1,
+                    effect.getAmplifier(),
                     effect.isAmbient(),
                     effect.isVisible(),
                     effect.showIcon()

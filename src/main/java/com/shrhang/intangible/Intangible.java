@@ -49,18 +49,11 @@ public class Intangible {
             DeferredRegister.create(BuiltInRegistries.POTION, Intangible.MODID);
     public static final Holder<Potion> INTANGIBLE_POTION =
             POTIONS.register("intangible", () -> new Potion(intangiblePotionEffect(
-                    Config.STARTUP.intangiblePotionDuration.get(),
-                    Config.STARTUP.intangiblePotionAmplifier.get()
+                    Config.STARTUP.intangiblePotionDuration.get()
             )));
     public static final Holder<Potion> LONG_INTANGIBLE_POTION =
             POTIONS.register("long_intangible", () -> new Potion("intangible", intangiblePotionEffect(
-                    Config.STARTUP.longIntangiblePotionDuration.get(),
-                    Config.STARTUP.longIntangiblePotionAmplifier.get()
-            )));
-    public static final Holder<Potion> STRONG_INTANGIBLE_POTION =
-            POTIONS.register("strong_intangible", () -> new Potion("intangible", intangiblePotionEffect(
-                    Config.STARTUP.strongIntangiblePotionDuration.get(),
-                    Config.STARTUP.strongIntangiblePotionAmplifier.get()
+                    Config.STARTUP.longIntangiblePotionDuration.get()
             )));
 
     public static final TagKey<DamageType> BYPASSES_INTANGIBLE =
@@ -97,17 +90,10 @@ public class Intangible {
                 Config.STARTUP.longIntangiblePotionRecipeIngredient.get(),
                 LONG_INTANGIBLE_POTION
         );
-        addConfiguredBrewingMix(
-                event,
-                Config.STARTUP.isStrongIntangiblePotionRecipeEnabled.get(),
-                Config.STARTUP.strongIntangiblePotionRecipeInput.get(),
-                Config.STARTUP.strongIntangiblePotionRecipeIngredient.get(),
-                STRONG_INTANGIBLE_POTION
-        );
     }
 
-    private static MobEffectInstance intangiblePotionEffect(int duration, int amplifier) {
-        return new MobEffectInstance(INTANGIBLE, duration, amplifier);
+    private static MobEffectInstance intangiblePotionEffect(int duration) {
+        return new MobEffectInstance(INTANGIBLE, duration);
     }
 
     private static void addConfiguredBrewingMix(RegisterBrewingRecipesEvent event, boolean enabled, String inputPotionId, String ingredientId, Holder<Potion> result) {
