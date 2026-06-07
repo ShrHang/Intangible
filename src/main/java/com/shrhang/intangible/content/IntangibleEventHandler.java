@@ -4,7 +4,6 @@ import com.shrhang.intangible.Config;
 import com.shrhang.intangible.Intangible;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.NeoForge;
@@ -32,7 +31,7 @@ public class IntangibleEventHandler {
         if (!player.hasEffect(INTANGIBLE)) return;
         var source = event.getSource();
         if (source.is(Intangible.BYPASSES_INTANGIBLE)) return;
-        if (source.is(DamageTypes.IN_WALL)) {
+        if (source.is(Intangible.INTANGIBLE_IMMUNE_TO)) {
             event.setInvulnerable(true);
         }
     }

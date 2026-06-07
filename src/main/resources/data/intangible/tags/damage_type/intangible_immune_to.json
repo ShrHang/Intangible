@@ -1,0 +1,8 @@
+{
+  "values": [
+    "minecraft:cactus",
+    "minecraft:in_wall",
+    "#minecraft:is_drowning",
+    "#minecraft:is_fire"
+  ]
+}

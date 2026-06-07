@@ -1,41 +1,38 @@
 package com.shrhang.intangible;
 
-import com.shrhang.intangible.content.IntangibleMobEffect;
-import com.shrhang.intangible.content.IntangibleState;
-import com.shrhang.intangible.content.IntangibleRender;
+import com.mojang.logging.LogUtils;
 import com.shrhang.intangible.content.IntangibleEventHandler;
+import com.shrhang.intangible.content.IntangibleMobEffect;
+import com.shrhang.intangible.content.IntangibleRender;
+import com.shrhang.intangible.content.IntangibleState;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.Potions;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.attachment.AttachmentType;
-import net.neoforged.neoforge.client.gui.ConfigurationScreen;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import org.slf4j.Logger;
 
 import java.util.function.Supplier;
 
 @Mod(Intangible.MODID)
 public class Intangible {
     public static final String MODID = "intangible";
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES =
             DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, Intangible.MODID);
@@ -51,14 +48,25 @@ public class Intangible {
     public static final DeferredRegister<Potion> POTIONS =
             DeferredRegister.create(BuiltInRegistries.POTION, Intangible.MODID);
     public static final Holder<Potion> INTANGIBLE_POTION =
-            POTIONS.register("intangible", () -> new Potion(new MobEffectInstance(INTANGIBLE, 12000, 8)));
+            POTIONS.register("intangible", () -> new Potion(intangiblePotionEffect(
+                    Config.STARTUP.intangiblePotionDuration.get(),
+                    Config.STARTUP.intangiblePotionAmplifier.get()
+            )));
     public static final Holder<Potion> LONG_INTANGIBLE_POTION =
-            POTIONS.register("long_intangible", () -> new Potion("intangible", new MobEffectInstance(INTANGIBLE, 24000, 6)));
+            POTIONS.register("long_intangible", () -> new Potion("intangible", intangiblePotionEffect(
+                    Config.STARTUP.longIntangiblePotionDuration.get(),
+                    Config.STARTUP.longIntangiblePotionAmplifier.get()
+            )));
     public static final Holder<Potion> STRONG_INTANGIBLE_POTION =
-            POTIONS.register("strong_intangible", () -> new Potion("intangible", new MobEffectInstance(INTANGIBLE, 6000, 14)));
+            POTIONS.register("strong_intangible", () -> new Potion("intangible", intangiblePotionEffect(
+                    Config.STARTUP.strongIntangiblePotionDuration.get(),
+                    Config.STARTUP.strongIntangiblePotionAmplifier.get()
+            )));
 
     public static final TagKey<DamageType> BYPASSES_INTANGIBLE =
             TagKey.create(Registries.DAMAGE_TYPE, rl("bypasses_intangible"));
+    public static final TagKey<DamageType> INTANGIBLE_IMMUNE_TO =
+            TagKey.create(Registries.DAMAGE_TYPE, rl("intangible_immune_to"));
 
     public Intangible(IEventBus modEventBus, ModContainer modContainer) {
         Config.register(modContainer);
@@ -75,9 +83,61 @@ public class Intangible {
     }
 
     private void registerBrewingRecipes(final RegisterBrewingRecipesEvent event) {
-        event.getBuilder().addMix(Potions.AWKWARD, Items.ECHO_SHARD, INTANGIBLE_POTION);
-        event.getBuilder().addMix(INTANGIBLE_POTION, Items.REDSTONE, LONG_INTANGIBLE_POTION);
-        event.getBuilder().addMix(INTANGIBLE_POTION, Items.GLOWSTONE_DUST, STRONG_INTANGIBLE_POTION);
+        addConfiguredBrewingMix(
+                event,
+                Config.STARTUP.isIntangiblePotionRecipeEnabled.get(),
+                Config.STARTUP.intangiblePotionRecipeInput.get(),
+                Config.STARTUP.intangiblePotionRecipeIngredient.get(),
+                INTANGIBLE_POTION
+        );
+        addConfiguredBrewingMix(
+                event,
+                Config.STARTUP.isLongIntangiblePotionRecipeEnabled.get(),
+                Config.STARTUP.longIntangiblePotionRecipeInput.get(),
+                Config.STARTUP.longIntangiblePotionRecipeIngredient.get(),
+                LONG_INTANGIBLE_POTION
+        );
+        addConfiguredBrewingMix(
+                event,
+                Config.STARTUP.isStrongIntangiblePotionRecipeEnabled.get(),
+                Config.STARTUP.strongIntangiblePotionRecipeInput.get(),
+                Config.STARTUP.strongIntangiblePotionRecipeIngredient.get(),
+                STRONG_INTANGIBLE_POTION
+        );
+    }
+
+    private static MobEffectInstance intangiblePotionEffect(int duration, int amplifier) {
+        return new MobEffectInstance(INTANGIBLE, duration, amplifier);
+    }
+
+    private static void addConfiguredBrewingMix(RegisterBrewingRecipesEvent event, boolean enabled, String inputPotionId, String ingredientId, Holder<Potion> result) {
+        if (!enabled) return;
+
+        ResourceLocation inputPotionLocation = ResourceLocation.tryParse(inputPotionId);
+        if (inputPotionLocation == null) {
+            LOGGER.warn("Skipping intangible potion recipe with invalid input potion id '{}'", inputPotionId);
+            return;
+        }
+
+        Holder<Potion> input = BuiltInRegistries.POTION.getHolder(inputPotionLocation).orElse(null);
+        if (input == null) {
+            LOGGER.warn("Skipping intangible potion recipe with unknown input potion '{}'", inputPotionId);
+            return;
+        }
+
+        ResourceLocation ingredientLocation = ResourceLocation.tryParse(ingredientId);
+        if (ingredientLocation == null) {
+            LOGGER.warn("Skipping intangible potion recipe with invalid ingredient id '{}'", ingredientId);
+            return;
+        }
+
+        Item ingredient = BuiltInRegistries.ITEM.getOptional(ingredientLocation).orElse(null);
+        if (ingredient == null) {
+            LOGGER.warn("Skipping intangible potion recipe with unknown ingredient item '{}'", ingredientId);
+            return;
+        }
+
+        event.getBuilder().addMix(input, ingredient, result);
     }
 
     public static ResourceLocation rl(String id) {
