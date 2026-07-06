@@ -4,23 +4,23 @@
     "#minecraft:is_drowning",
     "#minecraft:is_fire",
     {
-      "id":"create:crush",
+      "id": "create:crush",
       "required": false
     },
     {
-      "id":"create:mechanical_drill",
+      "id": "create:mechanical_drill",
       "required": false
     },
     {
-      "id":"create:mechanical_saw",
+      "id": "create:mechanical_saw",
       "required": false
     },
     {
-      "id":"immersiveengineering:sawblade",
+      "id": "immersiveengineering:sawblade",
       "required": false
     },
     {
-      "id":"immersiveengineering:wire_shock",
+      "id": "immersiveengineering:wire_shock",
       "required": false
     }
   ]

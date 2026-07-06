@@ -12,12 +12,12 @@ public class IntangibleMobEffect extends MobEffect {
     }
 
     @Override
-    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+    public boolean isDurationEffectTick(int duration, int amplifier) {
         return true;
     }
 
     @Override
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+    public void applyEffectTick(LivingEntity entity, int amplifier) {
         if (entity instanceof Player player) {
             player.noPhysics = true;
             player.setOnGround(false);
@@ -28,6 +28,5 @@ public class IntangibleMobEffect extends MobEffect {
                 serverPlayer.onUpdateAbilities();
             }
         }
-        return true;
     }
 }

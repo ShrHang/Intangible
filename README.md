@@ -52,9 +52,10 @@ The mod adds two potions:
 - Potion of Intangibility
 - Long Potion of Intangibility
 
-Their durations, recipe input potions, and recipe ingredients can all be adjusted in `intangible-startup.toml`.
+Potion brewing is fixed in this Forge 1.20.1 build:
 
-These are startup config options. After changing them, restart the game or server for the changes to apply reliably.
+- Awkward Potion + Ender Eye -> Potion of Intangibility
+- Potion of Intangibility + Redstone -> Long Potion of Intangibility
 
 ## Rendering
 

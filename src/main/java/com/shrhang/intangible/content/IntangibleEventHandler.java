@@ -7,55 +7,59 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.event.entity.living.MobEffectEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 
-import static com.shrhang.intangible.Intangible.INTANGIBLE;
-import static com.shrhang.intangible.Intangible.INTANGIBLE_STATE;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class IntangibleEventHandler {
+    private static final Map<UUID, IntangibleState> STATES = new ConcurrentHashMap<>();
+
     public static void init() {
-        NeoForge.EVENT_BUS.addListener(IntangibleEventHandler::onInvulnerabilityCheck);
-        NeoForge.EVENT_BUS.addListener(IntangibleEventHandler::onPreDamage);
-        NeoForge.EVENT_BUS.addListener(IntangibleEventHandler::onEffectAdded);
-        NeoForge.EVENT_BUS.addListener(IntangibleEventHandler::onPlayerTickPost);
-        NeoForge.EVENT_BUS.addListener(IntangibleEventHandler::onPlayerLoggedIn);
-        NeoForge.EVENT_BUS.addListener(IntangibleEventHandler::onPlayerLoggedOut);
+        MinecraftForge.EVENT_BUS.addListener(IntangibleEventHandler::onAttack);
+        MinecraftForge.EVENT_BUS.addListener(IntangibleEventHandler::onDamage);
+        MinecraftForge.EVENT_BUS.addListener(IntangibleEventHandler::onEffectAdded);
+        MinecraftForge.EVENT_BUS.addListener(IntangibleEventHandler::onPlayerTick);
+        MinecraftForge.EVENT_BUS.addListener(IntangibleEventHandler::onPlayerLoggedIn);
+        MinecraftForge.EVENT_BUS.addListener(IntangibleEventHandler::onPlayerLoggedOut);
+        MinecraftForge.EVENT_BUS.addListener(IntangibleEventHandler::onPlayerClone);
     }
 
-    private static void onInvulnerabilityCheck(final EntityInvulnerabilityCheckEvent event) {
+    private static void onAttack(final LivingAttackEvent event) {
         if (!(event.getEntity() instanceof Player player)) return;
-        if (!player.hasEffect(INTANGIBLE)) return;
+        if (!player.hasEffect(Intangible.INTANGIBLE.get())) return;
         var source = event.getSource();
         if (source.is(Intangible.BYPASSES_INTANGIBLE)) return;
         if (source.is(Intangible.INTANGIBLE_IMMUNE_TO)) {
-            event.setInvulnerable(true);
+            event.setCanceled(true);
         }
     }
 
-    private static void onPreDamage(final LivingDamageEvent.Pre event) {
+    private static void onDamage(final LivingDamageEvent event) {
         if (!Config.SERVER.isSlayTheSpire.get()) return;
 
         var entity = event.getEntity();
-        var effect = entity.getEffect(INTANGIBLE);
+        var effect = entity.getEffect(Intangible.INTANGIBLE.get());
         if (effect == null) return;
 
         var source = event.getSource();
-        if (source.is(DamageTypeTags.BYPASSES_EFFECTS)) return;
-        if (event.getNewDamage() <= 1.0f) return;
+        if (source.is(DamageTypeTags.BYPASSES_EFFECTS) || source.is(Intangible.BYPASSES_INTANGIBLE)) return;
+        if (event.getAmount() <= 1.0f) return;
 
-        event.setNewDamage(1.0F);
+        event.setAmount(1.0F);
 
         int duration = effect.getDuration() - Config.SERVER.intangibleDurationCostOnDamage.get();
 
         if (duration > 0) {
-            entity.removeEffectNoUpdate(INTANGIBLE);
+            entity.removeEffectNoUpdate(Intangible.INTANGIBLE.get());
             entity.addEffect(new MobEffectInstance(
-                    INTANGIBLE,
+                    Intangible.INTANGIBLE.get(),
                     duration,
                     effect.getAmplifier(),
                     effect.isAmbient(),
@@ -63,61 +67,54 @@ public class IntangibleEventHandler {
                     effect.showIcon()
             ));
         } else {
-            entity.removeEffect(INTANGIBLE);
+            entity.removeEffect(Intangible.INTANGIBLE.get());
         }
     }
 
-    /**
-     * 在效果被添加时捕获玩家的当前状态，如果是无实体则保存状态以便后续恢复。
-     */
     private static void onEffectAdded(final MobEffectEvent.Added event) {
-        if (event.getEffectInstance().is(INTANGIBLE) && event.getEntity() instanceof Player player) {
-            IntangibleState state = player.getData(INTANGIBLE_STATE);
+        if (event.getEffectInstance().getEffect() == Intangible.INTANGIBLE.get() && event.getEntity() instanceof Player player) {
+            IntangibleState state = STATES.computeIfAbsent(player.getUUID(), ignored -> new IntangibleState());
             if (!state.isActive()) state.captureBeforeEffect(player);
         }
     }
 
-    /**
-     * 在每个玩家的tick结束时检查无实体状态，如果玩家没有无实体效果但具体效果还在，则复原玩家的能力。
-     */
-    private static void onPlayerTickPost(final PlayerTickEvent.Post event) {
-        Player player = event.getEntity();
-        IntangibleState state = player.getExistingDataOrNull(INTANGIBLE_STATE);
-        if (state != null && state.isActive() && !player.hasEffect(INTANGIBLE)) {
+    private static void onPlayerTick(final TickEvent.PlayerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return;
+
+        Player player = event.player;
+        IntangibleState state = STATES.get(player.getUUID());
+        if (state != null && state.isActive() && !player.hasEffect(Intangible.INTANGIBLE.get())) {
             restore(player, state);
-        } else if (player.hasEffect(INTANGIBLE)) {
+            STATES.remove(player.getUUID());
+        } else if (player.hasEffect(Intangible.INTANGIBLE.get())) {
             keepIntangiblePoseState(player);
         }
     }
 
-    /**
-     * 在玩家登录时检查无实体状态，如果玩家处于无实体状态则重新捕获玩家的状态以防止数据错误，并进行服务端数据同步。
-     */
     private static void onPlayerLoggedIn(final PlayerEvent.PlayerLoggedInEvent event) {
         Player player = event.getEntity();
-        if (!player.hasEffect(INTANGIBLE)) return;
+        if (!player.hasEffect(Intangible.INTANGIBLE.get())) return;
 
-        IntangibleState state = player.getData(INTANGIBLE_STATE);
+        IntangibleState state = STATES.computeIfAbsent(player.getUUID(), ignored -> new IntangibleState());
         state.recaptureAfterLogin(player);
         if (player instanceof ServerPlayer serverPlayer) serverPlayer.onUpdateAbilities();
     }
 
-    /**
-     * 在玩家登出时检查无实体状态，如果玩家处于无实体状态则复原玩家的能力以防止数据丢失。
-     */
     private static void onPlayerLoggedOut(final PlayerEvent.PlayerLoggedOutEvent event) {
         Player player = event.getEntity();
-        IntangibleState state = player.getExistingDataOrNull(INTANGIBLE_STATE);
+        IntangibleState state = STATES.remove(player.getUUID());
         if (state != null && state.isActive()) restore(player, state);
     }
 
-    /**
-     * 用于复原玩家状态的辅助方法，并进行服务端数据同步。
-     */
+    private static void onPlayerClone(final PlayerEvent.Clone event) {
+        IntangibleState state = STATES.remove(event.getOriginal().getUUID());
+        if (state != null && state.isActive()) restore(event.getOriginal(), state);
+    }
+
     private static void restore(Player player, IntangibleState state) {
         player.setForcedPose(null);
         state.restoreBeforeEffect(player);
-        if (player instanceof ServerPlayer) player.onUpdateAbilities();
+        if (player instanceof ServerPlayer serverPlayer) serverPlayer.onUpdateAbilities();
     }
 
     public static void keepIntangiblePoseState(Player player) {

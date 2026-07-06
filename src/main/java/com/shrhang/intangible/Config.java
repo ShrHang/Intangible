@@ -1,47 +1,36 @@
 package com.shrhang.intangible;
 
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.client.gui.ConfigurationScreen;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class Config {
     public static final Client CLIENT;
     public static final Server SERVER;
-    public static final Startup STARTUP;
-    static final ModConfigSpec clientSpec;
-    static final ModConfigSpec serverSpec;
-    static final ModConfigSpec startupSpec;
+    static final ForgeConfigSpec clientSpec;
+    static final ForgeConfigSpec serverSpec;
 
     static {
-        Pair<?, ModConfigSpec> pair = new ModConfigSpec.Builder().configure(Client::new);
-        CLIENT = (Client) pair.getLeft();
-        clientSpec = pair.getRight();
-        pair = new ModConfigSpec.Builder().configure(Server::new);
-        SERVER = (Server) pair.getLeft();
-        serverSpec = pair.getRight();
-        pair = new ModConfigSpec.Builder().configure(Startup::new);
-        STARTUP = (Startup) pair.getLeft();
-        startupSpec = pair.getRight();
+        Pair<Client, ForgeConfigSpec> clientPair = new ForgeConfigSpec.Builder().configure(Client::new);
+        CLIENT = clientPair.getLeft();
+        clientSpec = clientPair.getRight();
+
+        Pair<Server, ForgeConfigSpec> serverPair = new ForgeConfigSpec.Builder().configure(Server::new);
+        SERVER = serverPair.getLeft();
+        serverSpec = serverPair.getRight();
     }
 
-    public static void register(ModContainer modContainer) {
-        modContainer.registerConfig(ModConfig.Type.STARTUP, Config.startupSpec);
-        modContainer.registerConfig(ModConfig.Type.SERVER, Config.serverSpec);
-        if (FMLEnvironment.dist.isClient()) {
-            modContainer.registerConfig(ModConfig.Type.CLIENT, Config.clientSpec);
-            modContainer.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
-        }
+    public static void register(FMLJavaModLoadingContext context) {
+        context.registerConfig(ModConfig.Type.CLIENT, clientSpec);
+        context.registerConfig(ModConfig.Type.SERVER, serverSpec);
     }
 
     public static class Client {
-        public final ModConfigSpec.BooleanValue isIntangibleRender;
-        public final ModConfigSpec.LongValue intangibleRenderColor;
+        public final ForgeConfigSpec.BooleanValue isIntangibleRender;
+        public final ForgeConfigSpec.LongValue intangibleRenderColor;
 
-        Client(ModConfigSpec.Builder builder) {
+        Client(ForgeConfigSpec.Builder builder) {
             builder.push("rendering");
             isIntangibleRender = builder
                     .translation("config.intangible.render.isintangiblerender")
@@ -60,10 +49,10 @@ public class Config {
     }
 
     public static class Server {
-        public final ModConfigSpec.BooleanValue isSlayTheSpire;
-        public final ModConfigSpec.IntValue intangibleDurationCostOnDamage;
+        public final ForgeConfigSpec.BooleanValue isSlayTheSpire;
+        public final ForgeConfigSpec.IntValue intangibleDurationCostOnDamage;
 
-        Server(ModConfigSpec.Builder builder) {
+        Server(ForgeConfigSpec.Builder builder) {
             builder.push("features");
             isSlayTheSpire = builder
                     .translation("config.intangible.features.isslaythespire")
@@ -73,61 +62,6 @@ public class Config {
                     .translation("config.intangible.features.intangibledurationcostondamage")
                     .comment("Duration cost in ticks when intangible reduces incoming damage.")
                     .defineInRange("intangibleDurationCostOnDamage", 600, 1, Integer.MAX_VALUE);
-            builder.pop();
-        }
-    }
-
-    public static class Startup {
-        public final ModConfigSpec.IntValue intangiblePotionDuration;
-        public final ModConfigSpec.IntValue longIntangiblePotionDuration;
-        public final ModConfigSpec.BooleanValue isIntangiblePotionRecipeEnabled;
-        public final ModConfigSpec.ConfigValue<String> intangiblePotionRecipeInput;
-        public final ModConfigSpec.ConfigValue<String> intangiblePotionRecipeIngredient;
-        public final ModConfigSpec.BooleanValue isLongIntangiblePotionRecipeEnabled;
-        public final ModConfigSpec.ConfigValue<String> longIntangiblePotionRecipeInput;
-        public final ModConfigSpec.ConfigValue<String> longIntangiblePotionRecipeIngredient;
-
-        Startup(ModConfigSpec.Builder builder) {
-            builder.push("potions");
-
-            builder.push("intangible");
-            intangiblePotionDuration = builder
-                    .translation("config.intangible.potions.intangible.duration")
-                    .comment("Duration of the normal intangible potion effect in ticks.")
-                    .defineInRange("duration", 12000, 1, Integer.MAX_VALUE);
-            isIntangiblePotionRecipeEnabled = builder
-                    .translation("config.intangible.potions.intangible.recipeenabled")
-                    .comment("Whether the normal intangible potion brewing recipe is enabled.")
-                    .define("recipeEnabled", true);
-            intangiblePotionRecipeInput = builder
-                    .translation("config.intangible.potions.intangible.recipeinput")
-                    .comment("Potion id used as the input for the normal intangible potion brewing recipe.")
-                    .define("recipeInput", "minecraft:awkward");
-            intangiblePotionRecipeIngredient = builder
-                    .translation("config.intangible.potions.intangible.recipeingredient")
-                    .comment("Item id used as the ingredient for the normal intangible potion brewing recipe.")
-                    .define("recipeIngredient", "minecraft:ender_eye");
-            builder.pop();
-
-            builder.push("long_intangible");
-            longIntangiblePotionDuration = builder
-                    .translation("config.intangible.potions.long_intangible.duration")
-                    .comment("Duration of the long intangible potion effect in ticks.")
-                    .defineInRange("duration", 24000, 1, Integer.MAX_VALUE);
-            isLongIntangiblePotionRecipeEnabled = builder
-                    .translation("config.intangible.potions.long_intangible.recipeenabled")
-                    .comment("Whether the long intangible potion brewing recipe is enabled.")
-                    .define("recipeEnabled", true);
-            longIntangiblePotionRecipeInput = builder
-                    .translation("config.intangible.potions.long_intangible.recipeinput")
-                    .comment("Potion id used as the input for the long intangible potion brewing recipe.")
-                    .define("recipeInput", "intangible:intangible");
-            longIntangiblePotionRecipeIngredient = builder
-                    .translation("config.intangible.potions.long_intangible.recipeingredient")
-                    .comment("Item id used as the ingredient for the long intangible potion brewing recipe.")
-                    .define("recipeIngredient", "minecraft:redstone");
-            builder.pop();
-
             builder.pop();
         }
     }
