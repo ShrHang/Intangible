@@ -12,7 +12,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
@@ -27,8 +26,6 @@ import net.minecraftforge.registries.RegistryObject;
 @Mod(Intangible.MODID)
 public class Intangible {
     public static final String MODID = "intangible";
-    private static final int INTANGIBLE_POTION_DURATION = 12000;
-    private static final int LONG_INTANGIBLE_POTION_DURATION = 24000;
 
     public static final DeferredRegister<MobEffect> MOB_EFFECTS =
             DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, MODID);
@@ -39,11 +36,11 @@ public class Intangible {
             DeferredRegister.create(ForgeRegistries.POTIONS, MODID);
     public static final RegistryObject<Potion> INTANGIBLE_POTION =
             POTIONS.register("intangible", () -> new Potion(intangiblePotionEffect(
-                    INTANGIBLE_POTION_DURATION
+                    StartupConfig.intangiblePotionDuration()
             )));
     public static final RegistryObject<Potion> LONG_INTANGIBLE_POTION =
             POTIONS.register("long_intangible", () -> new Potion("intangible", intangiblePotionEffect(
-                    LONG_INTANGIBLE_POTION_DURATION
+                    StartupConfig.longIntangiblePotionDuration()
             )));
 
     public static final TagKey<DamageType> BYPASSES_INTANGIBLE =
@@ -54,6 +51,7 @@ public class Intangible {
     public Intangible(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
 
+        StartupConfig.load();
         Config.register(context);
         modEventBus.addListener(this::commonSetup);
         MOB_EFFECTS.register(modEventBus);
@@ -66,8 +64,15 @@ public class Intangible {
     }
 
     private void registerBrewingRecipes() {
-        addBrewingMix(Potions.AWKWARD, Items.ENDER_EYE, INTANGIBLE_POTION.get());
-        addBrewingMix(INTANGIBLE_POTION.get(), Items.REDSTONE, LONG_INTANGIBLE_POTION.get());
+        StartupConfig.Recipe intangibleRecipe = StartupConfig.intangibleRecipe();
+        if (intangibleRecipe.enabled()) {
+            addBrewingMix(intangibleRecipe.input(), intangibleRecipe.ingredient(), INTANGIBLE_POTION.get());
+        }
+
+        StartupConfig.Recipe longIntangibleRecipe = StartupConfig.longIntangibleRecipe(INTANGIBLE_POTION.get());
+        if (longIntangibleRecipe.enabled()) {
+            addBrewingMix(longIntangibleRecipe.input(), longIntangibleRecipe.ingredient(), LONG_INTANGIBLE_POTION.get());
+        }
     }
 
     private static MobEffectInstance intangiblePotionEffect(int duration) {
