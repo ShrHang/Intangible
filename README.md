@@ -9,7 +9,7 @@ Maybe you only want to slip into the gaps between buildings, production lines, a
 
 Inspired by the name of the Intangible buff from *Slay the Spire*, this mod adds a simple but powerful status effect: **Intangible**.
 
-While a player has the Intangible effect, they can slowly fly and pass through walls like a ghost, making it much easier to inspect and modify the inside of large buildings, automated machines, and complex structures.
+While a player has the Intangible effect, they can fly and pass through walls like a ghost, making it much easier to inspect and modify the inside of large buildings, automated machines, and complex structures.
 
 The mod also recreates the damage-reduction behavior of the Intangible buff from *Slay the Spire*: players can reduce most incoming damage to 1 at the cost of effect duration. This behavior can be disabled in the config.
 
