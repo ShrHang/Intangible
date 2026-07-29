@@ -9,11 +9,9 @@ import static com.shrhang.intangible.Intangible.rl;
 
 public class IntangibleState {
     private static final ResourceLocation FLIGHT_MODIFIER = rl("intangible_flight");
-    private static final float INTANGIBLE_FLYING_SPEED = 0.02F;
 
     private boolean active;
     private boolean flying;
-    private float flyingSpeed;
 
     /**
      * @return 是否已经保存过进入无实体前的状态。
@@ -30,7 +28,6 @@ public class IntangibleState {
         var abilities = player.getAbilities();
         active = true;
         flying = abilities.flying;
-        flyingSpeed = abilities.getFlyingSpeed();
     }
 
     /**
@@ -47,7 +44,6 @@ public class IntangibleState {
 
         revokeFlight(player);
         abilities.flying = flying;
-        abilities.setFlyingSpeed(flyingSpeed);
         active = false;
     }
 
@@ -70,17 +66,11 @@ public class IntangibleState {
      * 只有飞行能力来自无实体本身时，才使用无实体的低速飞行。
      */
     public static boolean applyFlight(Player player) {
-        boolean hasExternalFlight = hasExternalFlight(player);
         boolean changed = grantFlight(player);
 
         var abilities = player.getAbilities();
         changed |= !abilities.flying;
         abilities.flying = true;
-
-        if (!hasExternalFlight) {
-            changed |= Float.compare(abilities.getFlyingSpeed(), INTANGIBLE_FLYING_SPEED) != 0;
-            abilities.setFlyingSpeed(INTANGIBLE_FLYING_SPEED);
-        }
 
         return changed;
     }
