@@ -2,6 +2,7 @@ package com.shrhang.intangible;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;
+import com.electronwill.nightconfig.toml.TomlFormat;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -18,7 +19,7 @@ import java.nio.file.Path;
 
 public final class StartupConfig {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final String FILE_NAME = Intangible.MODID + "-startup.toml";
+    private static final String FILE_NAME = Intangible.MODID + "-startup.config";
 
     private static final String INTANGIBLE_DURATION = "potions.intangible.duration";
     private static final String INTANGIBLE_RECIPE_ENABLED = "potions.intangible.recipeEnabled";
@@ -39,7 +40,7 @@ public final class StartupConfig {
         Path path = FMLPaths.CONFIGDIR.get().resolve(FILE_NAME);
         ensureFileExists(path);
 
-        try (CommentedFileConfig config = CommentedFileConfig.builder(path)
+        try (CommentedFileConfig config = CommentedFileConfig.builder(path, TomlFormat.instance())
                 .sync()
                 .writingMode(WritingMode.REPLACE)
                 .build()) {
