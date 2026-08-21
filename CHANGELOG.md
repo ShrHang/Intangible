@@ -1,5 +1,14 @@
 # ChangeLog
 
+## 1.0.3 - 26-08-21
+- Change:
+  - Changed the package name.
+  - Optimize code structure.
+- Fix:
+  - Fixed switching to third-person view while inside a wall with intangible effect would cause the camera to snap too close. (you can disable this in `intangible-client.toml`.)
+- Update:
+  - Updated to Minecraft 1.21.9-26.2.
+
 ## 1.0.2 - 26-07-30
 - Change:
   - Intangible effect wouldn't limit the speed of flight anymore.
