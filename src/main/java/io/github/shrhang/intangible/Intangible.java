@@ -1,10 +1,9 @@
-package com.shrhang.intangible;
+package io.github.shrhang.intangible;
 
 import com.mojang.logging.LogUtils;
-import com.shrhang.intangible.content.IntangibleEventHandler;
-import com.shrhang.intangible.content.IntangibleMobEffect;
-import com.shrhang.intangible.content.IntangibleRender;
-import com.shrhang.intangible.content.IntangibleState;
+import io.github.shrhang.intangible.content.IntangibleEventHandler;
+import io.github.shrhang.intangible.content.IntangibleMobEffect;
+import io.github.shrhang.intangible.content.IntangibleState;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -63,7 +62,7 @@ public class Intangible {
 
     public Intangible(IEventBus modEventBus, ModContainer modContainer) {
         Config.register(modContainer);
-        if (FMLEnvironment.dist.isClient()) modEventBus.addListener(IntangibleRender::registerLayers);
+        if (FMLEnvironment.dist.isClient()) ;
         modEventBus.addListener(this::commonSetup);
         ATTACHMENT_TYPES.register(modEventBus);
         MOB_EFFECTS.register(modEventBus);

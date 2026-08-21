@@ -1,4 +1,4 @@
-package com.shrhang.intangible.content;
+package io.github.shrhang.intangible.content;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
