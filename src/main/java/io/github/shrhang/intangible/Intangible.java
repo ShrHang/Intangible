@@ -2,7 +2,6 @@ package io.github.shrhang.intangible;
 
 import io.github.shrhang.intangible.content.IntangibleEventHandler;
 import io.github.shrhang.intangible.content.IntangibleMobEffect;
-import io.github.shrhang.intangible.content.client.IntangibleClient;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -17,6 +16,8 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -50,7 +51,8 @@ public class Intangible {
             TagKey.create(Registries.DAMAGE_TYPE, rl("intangible_immune_to"));
 
     public Intangible(FMLJavaModLoadingContext context) {
-        IntangibleClient.init(context);
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () ->
+                io.github.shrhang.intangible.content.client.IntangibleClient.init(context));
 
         IEventBus modEventBus = context.getModEventBus();
 
