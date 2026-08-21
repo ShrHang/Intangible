@@ -6,7 +6,6 @@ import io.github.shrhang.intangible.Config;
 import io.github.shrhang.intangible.content.IntangibleEventHandler;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
@@ -25,6 +24,7 @@ import static io.github.shrhang.intangible.Intangible.INTANGIBLE;
 import static io.github.shrhang.intangible.Intangible.id;
 
 public class IntangibleRender {
+    private static final int FULL_BRIGHT_LIGHT = 15728880;
     private static final ContextKey<Boolean> HAS_INTANGIBLE_EFFECT = new ContextKey<>(id("has_intangible_effect"));
 
     public static void registerLayers(EntityRenderersEvent.AddLayers event) {
@@ -65,13 +65,13 @@ public class IntangibleRender {
             if (renderState.isSpectator) return;
 
             var model = getParentModel();
-            var renderType = RenderTypes.itemEntityTranslucentCull(WHITE_TEXTURE);
+            var renderType = RenderTypes.entityTranslucentCullItemTarget(WHITE_TEXTURE);
             nodeCollector.submitModel(
                     model,
                     renderState,
                     poseStack,
                     renderType,
-                    LightTexture.FULL_BRIGHT,
+                    FULL_BRIGHT_LIGHT,
                     OverlayTexture.NO_OVERLAY,
                     Config.CLIENT.getIntangibleRenderColor(),
                     null,
