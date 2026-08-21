@@ -7,7 +7,7 @@ import io.github.shrhang.intangible.content.IntangibleState;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffect;
@@ -55,9 +55,9 @@ public class Intangible {
             )));
 
     public static final TagKey<DamageType> BYPASSES_INTANGIBLE =
-            TagKey.create(Registries.DAMAGE_TYPE, rl("bypasses_intangible"));
+            TagKey.create(Registries.DAMAGE_TYPE, id("bypasses_intangible"));
     public static final TagKey<DamageType> INTANGIBLE_IMMUNE_TO =
-            TagKey.create(Registries.DAMAGE_TYPE, rl("intangible_immune_to"));
+            TagKey.create(Registries.DAMAGE_TYPE, id("intangible_immune_to"));
 
     public Intangible(IEventBus modEventBus, ModContainer modContainer) {
         Config.register(modContainer);
@@ -96,7 +96,7 @@ public class Intangible {
     private static void addConfiguredBrewingMix(RegisterBrewingRecipesEvent event, boolean enabled, String inputPotionId, String ingredientId, Holder<Potion> result) {
         if (!enabled) return;
 
-        ResourceLocation inputPotionLocation = ResourceLocation.tryParse(inputPotionId);
+        Identifier inputPotionLocation = Identifier.tryParse(inputPotionId);
         if (inputPotionLocation == null) {
             LOGGER.warn("Skipping intangible potion recipe with invalid input potion id '{}'", inputPotionId);
             return;
@@ -108,7 +108,7 @@ public class Intangible {
             return;
         }
 
-        ResourceLocation ingredientLocation = ResourceLocation.tryParse(ingredientId);
+        Identifier ingredientLocation = Identifier.tryParse(ingredientId);
         if (ingredientLocation == null) {
             LOGGER.warn("Skipping intangible potion recipe with invalid ingredient id '{}'", ingredientId);
             return;
@@ -123,7 +123,7 @@ public class Intangible {
         event.getBuilder().addMix(input, ingredient, result);
     }
 
-    public static ResourceLocation rl(String id) {
-        return ResourceLocation.fromNamespaceAndPath(MODID, id);
+    public static Identifier id(String id) {
+        return Identifier.fromNamespaceAndPath(MODID, id);
     }
 }

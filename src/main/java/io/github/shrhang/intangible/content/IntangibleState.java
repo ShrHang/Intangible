@@ -1,14 +1,14 @@
 package io.github.shrhang.intangible.content;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
-import static io.github.shrhang.intangible.Intangible.rl;
+import static io.github.shrhang.intangible.Intangible.id;
 
 public class IntangibleState {
-    private static final ResourceLocation FLIGHT_MODIFIER = rl("intangible_flight");
+    private static final Identifier FLIGHT_MODIFIER = id("intangible_flight");
 
     private boolean active;
     private boolean flying;
