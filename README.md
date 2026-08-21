@@ -1,9 +1,9 @@
 ﻿# Intangible
-[![简体中文](https://img.shields.io/badge/如果你看不懂英文-请点击这里-red)](README_CN.md)
+[![简体中文](https://img.shields.io/badge/简体中文-README__CN-red)](README_CN.md)
 
-When you have finally built a huge factory, a complex pipe network, or a deeply nested multiblock machine, only to find that one block, pipe, or interface is buried at the very center, do you really want to tear the whole machine apart just to adjust it?
+When you have finally built a huge factory, a complex pipe network, or a deeply nested multiblock machine, only to find that one block you need to adjust is hidden deep within the structure. 
 
-Maybe you only want to slip into the gaps between buildings, production lines, and machines, fix that one small issue, and get back out without breaking anything unrelated. Wouldn't it be useful to move like a ghost for a short while?
+You might wish you could slip like a ghost into the gaps between buildings, or machines, fixing the issue and then get back without breaking anything unrelated.
 
 **Intangible** is made for exactly that situation.
 
@@ -52,7 +52,7 @@ The mod adds two potions:
 - Potion of Intangibility
 - Long Potion of Intangibility
 
-Their durations, recipe input potions, and recipe ingredients can all be adjusted in `intangible-startup.toml`.
+Their durations, recipe input potions, and recipe ingredients can all be adjusted in `intangible-startup.toml`.(or `intangible-startup.config` in 1.20.1)
 
 These are startup config options. After changing them, restart the game or server for the changes to apply reliably.
 
@@ -60,4 +60,4 @@ These are startup config options. After changing them, restart the game or serve
 
 If you do not want the translucent overlay on Intangible players, or if you want to change its color and transparency, you can configure it in `intangible-client.toml`.
 
-If you want to change the overlay texture, add `assets/intangible/textures/misc/intangible_overlay.png` in a resource pack.
+If you want to change the overlay texture, add `assets/intangible/textures/entity/intangible_overlay.png` in a resource pack.
