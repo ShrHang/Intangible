@@ -3,7 +3,8 @@
 ## 1.0.3 - 26-08-21
 - Change:
   - Changed the package name.
-  - Optimize code structure.
+- Fix:
+  - Fixed switching to third-person view while inside a wall with intangible effect would cause the camera to snap too close. (you can disable this in `intangible-client.toml`.)
 - Update:
   - Updated to Minecraft 1.21.9-26.2.
 

@@ -37,6 +37,7 @@ public class Config {
     public static class Client {
         public final ModConfigSpec.BooleanValue isIntangibleRender;
         public final ModConfigSpec.LongValue intangibleRenderColor;
+        public final ModConfigSpec.BooleanValue skipCameraBlockZoom;
 
         Client(ModConfigSpec.Builder builder) {
             builder.push("rendering");
@@ -48,6 +49,10 @@ public class Config {
                     .translation("config.intangible.render.intangiblerendercolor")
                     .comment("ARGB color for the intangible player overlay. Use the 0xAARRGGBB format. Default is 0x409AE9B6L.")
                     .defineInRange("intangibleRenderColor", 0x409AE9B6L, 0x00000000L, 0xFFFFFFFFL);
+            skipCameraBlockZoom = builder
+                    .translation("config.intangible.render.skipcamerablockzoom")
+                    .comment("Whether third-person camera block zoom should be skipped while the local player is intangible.")
+                    .define("skipCameraBlockZoom", true);
             builder.pop();
         }
 

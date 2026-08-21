@@ -23,6 +23,8 @@
   "config.intangible.render.intangiblerendercolor.tooltip": "Use the 0xAARRGGBB format. Default is 0x409AE9B6L.",
   "config.intangible.render.isintangiblerender": "Whether to render the translucent intangible player overlay.",
   "config.intangible.render.isintangiblerender.tooltip": "If enabled, a translucent overlay will be rendered on intangible players.",
+  "config.intangible.render.skipcamerablockzoom": "Whether third-person camera block zoom should be skipped while the local player is intangible.",
+  "config.intangible.render.skipcamerablockzoom.tooltip": "If enabled, the third-person camera block zoom will be skipped while the local player is intangible.",
   "effect.intangible.intangible": "Intangible",
   "effect.intangible.intangible.desc": "Turns the target ghostlike, allowing slow flight and wall phasing while limiting most incoming damage to 1.",
   "effect.intangible.intangible.description": "Turns the target ghostlike, allowing slow flight and wall phasing while limiting most incoming damage to 1.",

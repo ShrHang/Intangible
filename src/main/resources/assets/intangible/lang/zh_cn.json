@@ -1,4 +1,4 @@
-﻿{
+{
   "config.intangible.features.intangibledurationcostondamage": "受伤时消耗的无实体持续时间",
   "config.intangible.features.intangibledurationcostondamage.tooltip": "当无实体将受到的伤害降低时消耗的持续时间，单位为刻。",
   "config.intangible.features.isslaythespire": "杀戮尖塔式无实体",
@@ -23,6 +23,8 @@
   "config.intangible.render.intangiblerendercolor.tooltip": "使用 0xAARRGGBB 格式。默认值为 0x409AE9B6L。",
   "config.intangible.render.isintangiblerender": "渲染无实体玩家覆盖层",
   "config.intangible.render.isintangiblerender.tooltip": "启用后，会在处于无实体状态的玩家身上渲染半透明覆盖层。",
+  "config.intangible.render.skipcamerablockzoom": "无实体状态下是否跳过第三人称摄像机因方块导致的缩放",
+  "config.intangible.render.skipcamerablockzoom.tooltip": "启用后，在本地玩家处于无实体状态时，第三人称摄像机因方块导致的缩放将被跳过。",
   "effect.intangible.intangible": "无实体",
   "effect.intangible.intangible.desc": "使目标变得如幽灵般，可以缓慢飞行并穿墙，同时将大多数受到的伤害限制为 1 点。",
   "effect.intangible.intangible.description": "使目标变得如幽灵般，可以缓慢飞行并穿墙，同时将大多数受到的伤害限制为 1 点。",
