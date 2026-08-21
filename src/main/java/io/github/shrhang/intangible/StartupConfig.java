@@ -1,4 +1,4 @@
-package com.shrhang.intangible;
+package io.github.shrhang.intangible;
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.io.WritingMode;

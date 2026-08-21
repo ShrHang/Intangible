@@ -1,8 +1,8 @@
-package com.shrhang.intangible.content;
+package io.github.shrhang.intangible.content.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.shrhang.intangible.Config;
-import com.shrhang.intangible.Intangible;
+import io.github.shrhang.intangible.Config;
+import io.github.shrhang.intangible.Intangible;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.LightTexture;

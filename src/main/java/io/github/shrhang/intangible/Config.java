@@ -1,4 +1,4 @@
-package com.shrhang.intangible;
+package io.github.shrhang.intangible;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
@@ -22,8 +22,11 @@ public class Config {
     }
 
     public static void register(FMLJavaModLoadingContext context) {
-        context.registerConfig(ModConfig.Type.CLIENT, clientSpec);
         context.registerConfig(ModConfig.Type.SERVER, serverSpec);
+    }
+
+    public static void registerClient(FMLJavaModLoadingContext context) {
+        context.registerConfig(ModConfig.Type.CLIENT, clientSpec);
     }
 
     public static class Client {

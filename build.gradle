@@ -1,20 +1,8 @@
-buildscript {
-    repositories {
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-    }
-}
-
 plugins {
     id 'eclipse'
     id 'idea'
     id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
 }
-
-apply plugin: 'org.spongepowered.mixin'
 
 group = mod_group_id
 version = mod_version
@@ -26,6 +14,13 @@ base {
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(17)
     withSourcesJar()
+}
+
+sourceSets {
+    test {
+        java.setSrcDirs([])
+        resources.setSrcDirs([])
+    }
 }
 
 minecraft {
@@ -55,21 +50,8 @@ minecraft {
         gameTestServer {
             property 'forge.enabledGameTestNamespaces', mod_id
         }
-
-        data {
-            workingDirectory project.file('run-data')
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-        }
     }
 }
-
-mixin {
-    add sourceSets.main, "${mod_id}.refmap.json"
-
-    config "${mod_id}.mixins.json"
-}
-
-sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
     maven { url = "https://maven.blamejared.com" } // JEI, Vazkii's Mods
@@ -78,7 +60,6 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     implementation(fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}"))
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
 tasks.named('processResources', ProcessResources).configure {

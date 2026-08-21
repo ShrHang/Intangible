@@ -1,5 +1,12 @@
 # ChangeLog
 
+## 1.0.3 - 26-08-21
+- Change:
+  - Changed the package name.
+  - Optimize code structure.
+- Update:
+  - Updated to Minecraft 1.21.9-26.2.
+
 ## 1.0.2 - 26-07-30
 - Change:
     - Intangible effect wouldn't limit the speed of flight anymore.

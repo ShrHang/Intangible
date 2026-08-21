@@ -1,7 +1,8 @@
-package com.shrhang.intangible;
+package io.github.shrhang.intangible;
 
-import com.shrhang.intangible.content.IntangibleEventHandler;
-import com.shrhang.intangible.content.IntangibleMobEffect;
+import io.github.shrhang.intangible.content.IntangibleEventHandler;
+import io.github.shrhang.intangible.content.IntangibleMobEffect;
+import io.github.shrhang.intangible.content.client.IntangibleClient;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -49,6 +50,8 @@ public class Intangible {
             TagKey.create(Registries.DAMAGE_TYPE, rl("intangible_immune_to"));
 
     public Intangible(FMLJavaModLoadingContext context) {
+        IntangibleClient.init(context);
+
         IEventBus modEventBus = context.getModEventBus();
 
         StartupConfig.load();
