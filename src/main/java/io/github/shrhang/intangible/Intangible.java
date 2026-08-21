@@ -1,10 +1,9 @@
-package com.shrhang.intangible;
+package io.github.shrhang.intangible;
 
 import com.mojang.logging.LogUtils;
-import com.shrhang.intangible.content.IntangibleEventHandler;
-import com.shrhang.intangible.content.IntangibleMobEffect;
-import com.shrhang.intangible.content.IntangibleRender;
-import com.shrhang.intangible.content.IntangibleState;
+import io.github.shrhang.intangible.content.IntangibleEventHandler;
+import io.github.shrhang.intangible.content.IntangibleMobEffect;
+import io.github.shrhang.intangible.content.IntangibleState;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -19,7 +18,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
@@ -63,11 +61,6 @@ public class Intangible {
 
     public Intangible(IEventBus modEventBus, ModContainer modContainer) {
         Config.register(modContainer);
-        if (FMLEnvironment.dist.isClient()) {
-            modEventBus.addListener(IntangibleRender::registerLayers);
-            modEventBus.addListener(IntangibleRender::registerRenderStateModifiers);
-            NeoForge.EVENT_BUS.addListener(IntangibleRender::onMovementInputUpdate);
-        }
         modEventBus.addListener(this::commonSetup);
         ATTACHMENT_TYPES.register(modEventBus);
         MOB_EFFECTS.register(modEventBus);
