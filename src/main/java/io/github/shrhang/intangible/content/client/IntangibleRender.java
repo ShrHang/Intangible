@@ -1,7 +1,8 @@
-package com.shrhang.intangible.content;
+package io.github.shrhang.intangible.content.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.shrhang.intangible.Config;
+import io.github.shrhang.intangible.Config;
+import io.github.shrhang.intangible.content.IntangibleEventHandler;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.LightTexture;
@@ -20,8 +21,8 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
 import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 
-import static com.shrhang.intangible.Intangible.INTANGIBLE;
-import static com.shrhang.intangible.Intangible.rl;
+import static io.github.shrhang.intangible.Intangible.INTANGIBLE;
+import static io.github.shrhang.intangible.Intangible.rl;
 
 @OnlyIn(Dist.CLIENT)
 public class IntangibleRender {

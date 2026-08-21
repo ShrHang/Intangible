@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 1.0.3 - 26-08-21
+- Update:
+  - Updated to Minecraft 1.21.9-1.21.11.
+
 ## 1.0.2 - 26-07-30
 - Change:
   - Intangible effect wouldn't limit the speed of flight anymore.

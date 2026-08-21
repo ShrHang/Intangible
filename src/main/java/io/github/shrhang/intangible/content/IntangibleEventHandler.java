@@ -1,7 +1,7 @@
-package com.shrhang.intangible.content;
+package io.github.shrhang.intangible.content;
 
-import com.shrhang.intangible.Config;
-import com.shrhang.intangible.Intangible;
+import io.github.shrhang.intangible.Config;
+import io.github.shrhang.intangible.Intangible;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -14,8 +14,8 @@ import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-import static com.shrhang.intangible.Intangible.INTANGIBLE;
-import static com.shrhang.intangible.Intangible.INTANGIBLE_STATE;
+import static io.github.shrhang.intangible.Intangible.INTANGIBLE;
+import static io.github.shrhang.intangible.Intangible.INTANGIBLE_STATE;
 
 public class IntangibleEventHandler {
     public static void init() {
