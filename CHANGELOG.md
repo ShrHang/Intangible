@@ -1,6 +1,9 @@
 # ChangeLog
 
 ## 1.0.3 - 26-08-21
+- Change:
+  - Changed the package name.
+  - Optimize code structure.
 - Update:
   - Updated to Minecraft 1.21.9-26.2.
 
