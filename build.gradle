@@ -6,7 +6,7 @@ plugins {
 }
 
 version = mod_version
-group = mod_group_id
+group = mod_group_id + "." + mod_id + "." + loader
 
 repositories {
     mavenLocal()
@@ -89,6 +89,7 @@ publishing {
     publications {
         register('mavenJava', MavenPublication) {
             from components.java
+            artifactId = project.branch
         }
     }
     repositories {
