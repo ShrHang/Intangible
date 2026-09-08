@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       source_ref:
-        description: "要发布的源码分支或标签，例如 1.21.1"
+        description: "要发布的源码分支或标签，例如 neoforge/1.21.1"
         required: true
-        default: "1.21.1"
+        default: "neoforge/1.21.1"
         type: string
       java_version:
         description: "该分支构建所需的 Java 版本"
@@ -55,6 +55,45 @@ jobs:
           path: maven-site
           token: ${{ secrets.MAVEN_PUBLISH_TOKEN }}
 
+      - name: Generate publication POM
+        working-directory: source
+        shell: bash
+        run: bash ./gradlew generatePomFileForMavenJavaPublication
+
+      - name: Check release does not already exist
+        shell: bash
+        run: |
+          python3 - <<'PYTHON'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+
+          pom = Path("source/build/publications/mavenJava/pom-default.xml")
+          root = ET.parse(pom).getroot()
+          ns = {"m": "http://maven.apache.org/POM/4.0.0"}
+
+          def value(name):
+              text = root.findtext(f"m:{name}", namespaces=ns)
+              if not text or not text.strip():
+                  raise SystemExit(f"Missing POM field: {name}")
+              return text.strip()
+
+          group = value("groupId")
+          artifact = value("artifactId")
+          version = value("version")
+          target = (
+              Path("maven-site")
+              / group.replace(".", "/")
+              / artifact
+              / version
+          )
+
+          if target.exists():
+              raise SystemExit(
+                  f"Already published: {group}:{artifact}:{version}. "
+                  "Use a new version to publish new contents."
+              )
+          PYTHON
+
       - name: Restore existing Maven contents
         shell: bash
         run: |
@@ -86,7 +125,6 @@ jobs:
           git add io .nojekyll
 
           if git diff --cached --quiet; then
-            echo "No Maven changes to publish."
             exit 0
           fi
 
