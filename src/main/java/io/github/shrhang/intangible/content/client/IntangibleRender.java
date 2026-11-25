@@ -2,6 +2,7 @@ package io.github.shrhang.intangible.content.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.shrhang.intangible.Config;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.LightTexture;
@@ -47,6 +48,10 @@ public class IntangibleRender {
             if (!Config.CLIENT.isIntangibleRender.get()) return;
             if (!player.hasEffect(INTANGIBLE)) return;
             if (player.isSpectator()) return;
+
+            // 若玩家不可见，则不渲染
+            var viewer = Minecraft.getInstance().player;
+            if (viewer == null || player.isInvisibleTo(viewer)) return;
 
             var model = getParentModel();
             var renderType = RenderType.itemEntityTranslucentCull(WHITE_TEXTURE);

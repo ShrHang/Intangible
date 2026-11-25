@@ -67,9 +67,6 @@ public class IntangibleState {
 
         var abilities = player.getAbilities();
         player.noPhysics = player.isSpectator();
-        if (!player.isSpectator()) {
-            player.setNoGravity(false);
-        }
 
         revokeFlight(player);
         abilities.flying = flying;

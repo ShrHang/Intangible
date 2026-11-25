@@ -2,9 +2,9 @@ package io.github.shrhang.intangible.content;
 
 import io.github.shrhang.intangible.Config;
 import io.github.shrhang.intangible.Intangible;
+import io.github.shrhang.intangible.mixin.LivingEntityInvoker;
+import io.github.shrhang.intangible.mixin.MobEffectInstanceAccessor;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
@@ -44,26 +44,17 @@ public class IntangibleEventHandler {
         if (effect == null) return;
 
         var source = event.getSource();
-        if (source.is(DamageTypeTags.BYPASSES_EFFECTS)) return;
+        if (source.is(Intangible.BYPASSES_INTANGIBLE)) return;
         if (event.getNewDamage() <= 1.0f) return;
 
         event.setNewDamage(1.0F);
 
-        int duration = effect.getDuration() - Config.SERVER.intangibleDurationCostOnDamage.get();
+        if (effect.isInfiniteDuration()) return; // 检测是否为无限持续时间
 
-        if (duration > 0) {
-            entity.removeEffectNoUpdate(INTANGIBLE);
-            entity.addEffect(new MobEffectInstance(
-                    INTANGIBLE,
-                    duration,
-                    effect.getAmplifier(),
-                    effect.isAmbient(),
-                    effect.isVisible(),
-                    effect.showIcon()
-            ));
-        } else {
-            entity.removeEffect(INTANGIBLE);
-        }
+        // 设置时间为1，让原版在下一次 tick 移除效果
+        int remainingDuration = Math.max(1, effect.getDuration() - Config.SERVER.intangibleDurationCostOnDamage.get());
+        ((MobEffectInstanceAccessor) effect).intangible$setDuration(remainingDuration);
+        ((LivingEntityInvoker) entity).intangible$onEffectUpdated(effect, false, null);
     }
 
     /**
@@ -123,6 +114,11 @@ public class IntangibleEventHandler {
 
     public static void keepIntangiblePoseState(Player player) {
         // 客户端通过效果同步包获得效果时不会触发 MobEffectEvent.Added。
-        player.getData(INTANGIBLE_STATE).forceStandingPose(player);
+        IntangibleState state = player.getData(INTANGIBLE_STATE);
+        if (player.isSleeping()) { // 如果玩家正在睡觉，则恢复玩家的姿势以防止睡觉姿势被覆盖。
+            state.restorePose(player);
+        } else {
+            state.forceStandingPose(player);
+        }
     }
 }
