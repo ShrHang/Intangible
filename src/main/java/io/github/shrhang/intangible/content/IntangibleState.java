@@ -1,6 +1,7 @@
 package io.github.shrhang.intangible.content;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -12,6 +13,28 @@ public class IntangibleState {
 
     private boolean active;
     private boolean flying;
+    private boolean forcingStandingPose;
+    private Pose previousForcedPose;
+
+    public void forceStandingPose(Player player) {
+        if (!forcingStandingPose) {
+            previousForcedPose = player.getForcedPose();
+            forcingStandingPose = true;
+        }
+
+        player.setForcedPose(Pose.STANDING);
+        player.setPose(Pose.STANDING);
+    }
+
+    public void restorePose(Player player) {
+        if (!forcingStandingPose) return;
+
+        if (player.getForcedPose() == Pose.STANDING) {
+            player.setForcedPose(previousForcedPose);
+        }
+        previousForcedPose = null;
+        forcingStandingPose = false;
+    }
 
     /**
      * @return 是否已经保存过进入无实体前的状态。
@@ -38,9 +61,6 @@ public class IntangibleState {
 
         var abilities = player.getAbilities();
         player.noPhysics = player.isSpectator();
-        if (!player.isSpectator()) {
-            player.setNoGravity(false);
-        }
 
         revokeFlight(player);
         abilities.flying = flying;
