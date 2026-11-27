@@ -63,6 +63,7 @@ public class IntangibleRender {
             if (!Config.CLIENT.isIntangibleRender.get()) return;
             if (!Boolean.TRUE.equals(renderState.getRenderData(HAS_INTANGIBLE_EFFECT))) return;
             if (renderState.isSpectator) return;
+            if (renderState.isInvisibleToPlayer) return;
 
             var model = getParentModel();
             var renderType = RenderTypes.itemEntityTranslucentCull(WHITE_TEXTURE);
