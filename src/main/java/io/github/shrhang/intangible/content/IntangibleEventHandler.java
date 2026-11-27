@@ -2,10 +2,9 @@ package io.github.shrhang.intangible.content;
 
 import io.github.shrhang.intangible.Config;
 import io.github.shrhang.intangible.Intangible;
+import io.github.shrhang.intangible.mixin.LivingEntityInvoker;
+import io.github.shrhang.intangible.mixin.MobEffectInstanceAccessor;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityInvulnerabilityCheckEvent;
@@ -55,26 +54,16 @@ public class IntangibleEventHandler {
         if (effect == null) return;
 
         var source = event.getSource();
-        if (source.is(DamageTypeTags.BYPASSES_EFFECTS)) return;
+        if (source.is(Intangible.BYPASSES_INTANGIBLE)) return;
         if (event.getNewDamage() <= 1.0f) return;
 
         event.setNewDamage(1.0F);
+        if (effect.isInfiniteDuration()) return;
 
-        int duration = effect.getDuration() - Config.SERVER.intangibleDurationCostOnDamage.get();
-
-        if (duration > 0) {
-            entity.removeEffectNoUpdate(INTANGIBLE);
-            entity.addEffect(new MobEffectInstance(
-                    INTANGIBLE,
-                    duration,
-                    effect.getAmplifier(),
-                    effect.isAmbient(),
-                    effect.isVisible(),
-                    effect.showIcon()
-            ));
-        } else {
-            entity.removeEffect(INTANGIBLE);
-        }
+        // 保留至少 1 tick，让原版在归零时恢复被覆盖的效果或结束当前效果。
+        int remainingDuration = Math.max(1, effect.getDuration() - Config.SERVER.intangibleDurationCostOnDamage.get());
+        ((MobEffectInstanceAccessor) effect).intangible$setDuration(remainingDuration);
+        ((LivingEntityInvoker) entity).intangible$onEffectUpdated(effect, false, null);
     }
 
     /**
@@ -88,15 +77,15 @@ public class IntangibleEventHandler {
     }
 
     /**
-     * 在每个玩家的tick结束时检查无实体状态，如果玩家没有无实体效果但具体效果还在，则复原玩家的能力。
+     * 在双方的玩家 tick 末尾维持或恢复姿势，并在需要时恢复飞行状态。
      */
     private static void onPlayerTickPost(final PlayerTickEvent.Post event) {
         Player player = event.getEntity();
-        IntangibleState state = player.getExistingData(INTANGIBLE_STATE).orElse(null);
-        if (state != null && state.isActive() && !player.hasEffect(INTANGIBLE)) {
-            restore(player, state);
-        } else if (player.hasEffect(INTANGIBLE)) {
+        if (player.hasEffect(INTANGIBLE)) {
             keepIntangiblePoseState(player);
+        } else {
+            IntangibleState state = player.getExistingData(INTANGIBLE_STATE).orElse(null);
+            if (state != null) restore(player, state);
         }
     }
 
@@ -118,14 +107,16 @@ public class IntangibleEventHandler {
     private static void onPlayerLoggedOut(final PlayerEvent.PlayerLoggedOutEvent event) {
         Player player = event.getEntity();
         IntangibleState state = player.getExistingData(INTANGIBLE_STATE).orElse(null);
-        if (state != null && state.isActive()) restore(player, state);
+        if (state != null) restore(player, state);
     }
 
     /**
      * 用于复原玩家状态的辅助方法，并进行服务端数据同步。
      */
     private static void restore(Player player, IntangibleState state) {
-        player.setForcedPose(null);
+        state.restorePose(player);
+        if (!state.isActive()) return;
+
         state.restoreBeforeEffect(player);
         if (player instanceof ServerPlayer) player.onUpdateAbilities();
     }
@@ -138,7 +129,12 @@ public class IntangibleEventHandler {
     }
 
     private static void keepIntangiblePoseState(Player player) {
-        player.setForcedPose(Pose.STANDING);
-        player.setPose(Pose.STANDING);
+        // 客户端通过效果同步包获得效果时不会触发 MobEffectEvent.Added。
+        IntangibleState state = player.getData(INTANGIBLE_STATE);
+        if (player.isSleeping()) {
+            state.restorePose(player);
+        } else {
+            state.forceStandingPose(player);
+        }
     }
 }
